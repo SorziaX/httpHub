@@ -1,0 +1,21 @@
+
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js"></script>
+
+<div id="out"> </div>
+
+<script>
+
+    var jsonObj = new Object();
+    jsonObj["code"] = 0;
+    var json = JSON.stringify(jsonObj);
+    var targetURL = "http://localhost:8989";
+    var url = "https://fengyu.moe/coc/diceArena.php";
+    var body = { url: url, data: "dice=" + json };
+    var params = "?url=" + url + "&data=" + "dice=" + json;
+    document.write(JSON.stringify(body));
+    $.post(targetURL, body, function (data) {
+        //showResult(data);
+        document.getElementById("out").innerHTML = data;
+    });
+
+</script>
