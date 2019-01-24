@@ -6,6 +6,7 @@ var querystring = require('querystring');
 var express = require('express');
 var app = express();
 var cors = require('cors')
+var FormData = require('form-data');
 
 //app.use(cors());
 //app.options('*', cors());
@@ -20,7 +21,6 @@ http.createServer(function(req,res){
         params = querystring.parse(data);
         var toUrl = params.url;
         var toParams = params.data;
-        console.log(params);
 
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
@@ -32,14 +32,24 @@ http.createServer(function(req,res){
 
 }).listen(8989);
 
- function httpRequest(toUrl,param,rootRes){
+ function httpRequest(toUrl,toParams,rootRes){
+    console.log(toUrl + " " + toParams);
+
+    var form = new FormData();
+    form.append('dice', toParams);
+
     //get the html
      var opt = url.parse(toUrl);
      opt.method = 'POST';
+     opt.headers = form.getHeaders();
+
+     console.log(opt.headers);
+     /*
      opt.headers = {
-         'Content-Type': 'application/x-www-form-urlencoded',
-         'Content-Length': param.length
+         'Content-Type': 'multipart/form-data',
+         'Content-Length': toParams.length
      };
+     */
 
     var html = "";
     var postReq = https.request(opt,function(res) {
@@ -49,6 +59,7 @@ http.createServer(function(req,res){
         });
 
         res.on('end', function () {
+            //console.log(res);
             rootRes.end(html);
         });
     }).on('error', function(err) {
@@ -56,7 +67,10 @@ http.createServer(function(req,res){
         rootRes.end();
     });
 
-    postReq.write(param);
+    /*
+    postReq.write(toParams);
     postReq.end(); 
+    */
+    form.pipe(postReq);
  }
 
